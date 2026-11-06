@@ -1,13 +1,7 @@
 all: main
 
-main: main.o DynamicArray.o
-	g++ -std=c++17 -Wall -Wextra main.o DynamicArray.o -o main
-
-main.o: src/main.cpp
-	g++ -std=c++17 -Wall -Wextra -c src/main.cpp
-
-DynamicArray.o: src/DynamicArray.cpp
-	g++ -std=c++17 -Wall -Wextra -c src/DynamicArray.cpp
+main: src/main.cpp include/DynamicArray.h
+	g++ -std=c++17 -Wall -Wextra src/main.cpp -o main
 
 clean:
-	rm -f *.o main
+	rm -f main
