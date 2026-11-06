@@ -1,10 +1,9 @@
 #include "../include/DynamicArray.h"
-#include <iostream>
 #include <new>
-#include <stdexcept>
+#include <string>
 
 int main() {
-    DynamicArray a(5);
+    DynamicArray<int> a(5);
     for (int i = 0; i < 5; i++)
         a.set(i, i * 10);
     a.print();
@@ -26,49 +25,41 @@ int main() {
     std::cout << "a[3] = " << a.get(3) << std::endl;
 
     try {
-        a.get(10);
-    }
-    catch (const std::out_of_range& e) {
-        std::cout << "out_of_range: " << e.what() << std::endl;
-    }
-
-    try {
-        DynamicArray bad(-1);
+        DynamicArray<int> bad(-1);
     }
     catch (const std::bad_alloc& e) {
         std::cout << "bad_alloc: " << e.what() << std::endl;
     }
 
-    DynamicArray b(a);
+    DynamicArray<int> b(a);
     b.set(0, -50);
-    a.print();
-    b.print();
+    std::cout << "a: " << a << std::endl;
+    std::cout << "b: " << b << std::endl;
 
-    a.push_back(77);
+    DynamicArray<int> c(5);
+    for (int i = 0; i < 5; i++)
+        c.set(i, i + 1);
+    std::cout << "distance(a, c) = " << a.distance(c) << std::endl;
 
+    DynamicArray<int> d(3);
     try {
-        a.push_back(101);
+        a.distance(d);
     }
     catch (const std::invalid_argument& e) {
         std::cout << "invalid_argument: " << e.what() << std::endl;
     }
 
-    a.print();
+    DynamicArray<std::string> s(2);
+    s.set(0, "hello");
+    s.set(1, "world");
+    std::cout << "s: " << s << std::endl;
 
-    DynamicArray c(6);
-    for (int i = 0; i < 6; i++)
-        c.set(i, i + 1);
-    a.add(c);
-    a.print();
-    a.sub(c);
-    a.print();
-
-    DynamicArray d(3);
+    DynamicArray<std::string> t(2);
     try {
-        a.add(d);
+        s.distance(t);
     }
-    catch (const std::out_of_range& e) {
-        std::cout << "out_of_range: " << e.what() << std::endl;
+    catch (const std::bad_typeid& e) {
+        std::cout << "bad_typeid: " << e.what() << std::endl;
     }
 
     return 0;
