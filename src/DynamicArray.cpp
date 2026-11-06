@@ -1,8 +1,19 @@
 #include "../include/DynamicArray.h"
 #include <iostream>
+#include <stdexcept>
 
 static bool validValue(int value) {
     return value >= -100 && value <= 100;
+}
+
+static void checkValue(int value) {
+    if (!validValue(value))
+        throw std::invalid_argument("значение не в границах -100..100");
+}
+
+static void checkIndex(int index, int size) {
+    if (index < 0 || index >= size)
+        throw std::out_of_range("индекс вне массива");
 }
 
 DynamicArray::DynamicArray(int n) {
@@ -28,30 +39,18 @@ void DynamicArray::print() {
 }
 
 void DynamicArray::set(int index, int value) {
-    if (index < 0 || index >= size) {
-        std::cout << "номер вне массива" << std::endl;
-        return;
-    }
-    if (!validValue(value)) {
-        std::cout << "значение не в границах -100..100" << std::endl;
-        return;
-    }
+    checkIndex(index, size);
+    checkValue(value);
     data[index] = value;
 }
 
 int DynamicArray::get(int index) {
-    if (index < 0 || index >= size) {
-        std::cout << "индекс вне массива" << std::endl;
-        return 0;
-    }
+    checkIndex(index, size);
     return data[index];
 }
 
 void DynamicArray::push_back(int value) {
-    if (!validValue(value)) {
-        std::cout << "значение не в границах -100..100" << std::endl;
-        return;
-    }
+    checkValue(value);
     int* newData = new int[size + 1];
     for (int i = 0; i < size; i++)
         newData[i] = data[i];
@@ -62,15 +61,15 @@ void DynamicArray::push_back(int value) {
 }
 
 void DynamicArray::add(DynamicArray& other) {
-    for (int i = 0; i < size; i++) {
-        if (i < other.size)
-            data[i] += other.data[i];
-    }
+    if (other.size < size)
+        throw std::out_of_range("второй массив меньше первого");
+    for (int i = 0; i < size; i++)
+        data[i] += other.data[i];
 }
 
 void DynamicArray::sub(DynamicArray& other) {
-    for (int i = 0; i < size; i++) {
-        if (i < other.size)
-            data[i] -= other.data[i];
-    }
+    if (other.size < size)
+        throw std::out_of_range("второй массив меньше первого");
+    for (int i = 0; i < size; i++)
+        data[i] -= other.data[i];
 }

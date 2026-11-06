@@ -1,33 +1,75 @@
 #include "../include/DynamicArray.h"
 #include <iostream>
+#include <new>
+#include <stdexcept>
 
 int main() {
     DynamicArray a(5);
     for (int i = 0; i < 5; i++)
         a.set(i, i * 10);
     a.print();
-    a.set(7, 5);    // неверный индекс
-    a.set(2, 150);  // верхняя граница пробита значение
+
+    try {
+        a.set(7, 5);
+    }
+    catch (const std::out_of_range& e) {
+        std::cout << "out_of_range: " << e.what() << std::endl;
+    }
+
+    try {
+        a.set(2, 150);
+    }
+    catch (const std::invalid_argument& e) {
+        std::cout << "invalid_argument: " << e.what() << std::endl;
+    }
+
     std::cout << "a[3] = " << a.get(3) << std::endl;
-    a.get(10);      // плохой индекс
+
+    try {
+        a.get(10);
+    }
+    catch (const std::out_of_range& e) {
+        std::cout << "out_of_range: " << e.what() << std::endl;
+    }
+
+    try {
+        DynamicArray bad(-1);
+    }
+    catch (const std::bad_alloc& e) {
+        std::cout << "bad_alloc: " << e.what() << std::endl;
+    }
 
     DynamicArray b(a);
     b.set(0, -50);
-    a.print();  // не поменялся
+    a.print();
     b.print();
 
     a.push_back(77);
-    a.push_back(101);  // больше ограничения
+
+    try {
+        a.push_back(101);
+    }
+    catch (const std::invalid_argument& e) {
+        std::cout << "invalid_argument: " << e.what() << std::endl;
+    }
+
     a.print();
 
-    DynamicArray c(3);
-    c.set(0, 1);
-    c.set(1, 2);
-    c.set(2, 3);
+    DynamicArray c(6);
+    for (int i = 0; i < 6; i++)
+        c.set(i, i + 1);
     a.add(c);
     a.print();
     a.sub(c);
     a.print();
+
+    DynamicArray d(3);
+    try {
+        a.add(d);
+    }
+    catch (const std::out_of_range& e) {
+        std::cout << "out_of_range: " << e.what() << std::endl;
+    }
 
     return 0;
 }
