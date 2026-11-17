@@ -1,9 +1,11 @@
 #pragma once
 #include <cmath>
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <type_traits>
 #include <typeinfo>
+#include <utility>
 
 template <typename T>
 class DynamicArray {
@@ -26,9 +28,39 @@ public:
 
     DynamicArray(const DynamicArray& other) {
         size = other.size;
-        data = new T[size];
+        std::unique_ptr<T[]> newData(new T[size]);
         for (int i = 0; i < size; i++)
-            data[i] = other.data[i];
+            newData[i] = other.data[i];
+        data = newData.release();
+    }
+
+    DynamicArray& operator=(const DynamicArray& other) {
+        if (this == &other)
+            return *this;
+
+        DynamicArray copy(other);
+        std::swap(data, copy.data);
+        std::swap(size, copy.size);
+        return *this;
+    }
+
+    DynamicArray(DynamicArray&& other) noexcept {
+        data = other.data;
+        size = other.size;
+        other.data = nullptr;
+        other.size = 0;
+    }
+
+    DynamicArray& operator=(DynamicArray&& other) noexcept {
+        if (this == &other)
+            return *this;
+
+        delete[] data;
+        data = other.data;
+        size = other.size;
+        other.data = nullptr;
+        other.size = 0;
+        return *this;
     }
 
     ~DynamicArray() {
@@ -154,12 +186,12 @@ public:
 
     void push_back(T value) {
         checkValue(value);
-        T* newData = new T[size + 1];
+        std::unique_ptr<T[]> newData(new T[size + 1]);
         for (int i = 0; i < size; i++)
             newData[i] = data[i];
         newData[size] = value;
         delete[] data;
-        data = newData;
+        data = newData.release();
         size++;
     }
 

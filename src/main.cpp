@@ -1,6 +1,13 @@
 #include "../include/DynamicArray.h"
+#include <cassert>
 #include <new>
 #include <string>
+#include <utility>
+
+void showArray(DynamicArray<int> arr, const int* originalData) {
+    std::cout << "array: " << arr << std::endl;
+    std::cout << "same buffer: " << (arr.begin() == originalData) << std::endl;
+}
 
 int main() {
     DynamicArray<int> a(5);
@@ -104,6 +111,39 @@ int main() {
     for (const auto& value : view)
         std::cout << value << " ";
     std::cout << std::endl;
+
+    DynamicArray<int> copy(1);
+    DynamicArray<int> another(1);
+    another = copy = x;
+    assert(copy == x && another == x);
+    copy[0] = 50;
+    assert(copy != x);
+    DynamicArray<int>& same = copy;
+    copy = same;
+    assert(copy.get(0) == 50);
+    std::cout << "copy: " << copy << std::endl;
+
+    const int* originalData = x.begin();
+    std::cout << "copy in function:" << std::endl;
+    showArray(x, originalData);
+    assert(x.begin() == originalData);
+    std::cout << "move in function:" << std::endl;
+    showArray(std::move(x), originalData);
+    assert(x.begin() == nullptr && x.begin() == x.end());
+
+    const int* copiedData = copy.begin();
+    another = std::move(copy);
+    assert(another.begin() == copiedData);
+    assert(copy.begin() == nullptr && copy.begin() == copy.end());
+
+    DynamicArray<int>& sameMoved = another;
+    another = std::move(sameMoved);
+    assert(another.begin() == copiedData);
+    std::cout << "after move: " << another << std::endl;
+
+    copy.push_back(7);
+    assert(copy.get(0) == 7);
+    std::cout << "used again: " << copy << std::endl;
 
     return 0;
 }
