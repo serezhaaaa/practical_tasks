@@ -62,5 +62,48 @@ int main() {
         std::cout << "bad_typeid: " << e.what() << std::endl;
     }
 
+    DynamicArray<int> x(3);
+    x[0] = 10;
+    x[1] = x[0];
+
+    const DynamicArray<int>& view = x;
+    std::cout << "x[1] = " << view[1] << std::endl;
+
+    try {
+        x[3] = 1;
+    }
+    catch (const std::out_of_range& e) {
+        std::cout << "out_of_range: " << e.what() << std::endl;
+    }
+
+    try {
+        x[1] = 150;
+    }
+    catch (const std::invalid_argument& e) {
+        std::cout << "invalid_argument: " << e.what() << std::endl;
+    }
+
+    DynamicArray<int> y(x);
+    std::cout << "x == y: " << (x == y) << std::endl;
+
+    DynamicArray<int> shorter(1);
+    shorter[0] = 2;
+    x += shorter;
+    std::cout << "x += shorter: " << x << std::endl;
+    std::cout << "x != y: " << (x != y) << std::endl;
+    x -= shorter;
+    std::cout << "x -= shorter: " << x << std::endl;
+
+    x += 3;
+    std::cout << "x += 3: " << x << std::endl;
+    x -= 3;
+    std::cout << "x -= 3: " << x << std::endl;
+
+    for (auto& value : x)
+        value++;
+    for (const auto& value : view)
+        std::cout << value << " ";
+    std::cout << std::endl;
+
     return 0;
 }
