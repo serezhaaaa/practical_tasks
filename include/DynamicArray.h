@@ -60,6 +60,98 @@ public:
         return data[index];
     }
 
+    class Element {
+        DynamicArray& array;
+        int index;
+
+    public:
+        Element(DynamicArray& array, int index) : array(array), index(index) {}
+
+        operator T() const {
+            return array.get(index);
+        }
+
+        Element& operator=(T value) {
+            array.set(index, value);
+            return *this;
+        }
+
+        Element& operator=(const Element& other) {
+            return *this = other.array.get(other.index);
+        }
+    };
+
+    Element operator[](int index) {
+        if (index < 0 || index >= size)
+            throw std::out_of_range("индекс вне массива");
+        return Element(*this, index);
+    }
+
+    const T& operator[](int index) const {
+        if (index < 0 || index >= size)
+            throw std::out_of_range("индекс вне массива");
+        return data[index];
+    }
+
+    bool operator==(const DynamicArray& other) const {
+        if (size != other.size)
+            return false;
+
+        for (int i = 0; i < size; i++)
+            if (!(data[i] == other.data[i]))
+                return false;
+
+        return true;
+    }
+
+    bool operator!=(const DynamicArray& other) const {
+        return !(*this == other);
+    }
+
+    DynamicArray& operator+=(const DynamicArray& other) {
+        for (int i = 0; i < size && i < other.size; i++)
+            data[i] += other.data[i];
+        return *this;
+    }
+
+    DynamicArray& operator-=(const DynamicArray& other) {
+        for (int i = 0; i < size && i < other.size; i++)
+            data[i] -= other.data[i];
+        return *this;
+    }
+
+    DynamicArray& operator+=(T value) {
+        for (int i = 0; i < size; i++)
+            data[i] += value;
+        return *this;
+    }
+
+    DynamicArray& operator-=(T value) {
+        for (int i = 0; i < size; i++)
+            data[i] -= value;
+        return *this;
+    }
+
+    T* begin() {
+        return data;
+    }
+
+    T* end() {
+        if (size == 0)
+            return data;
+        return data + size;
+    }
+
+    const T* begin() const {
+        return data;
+    }
+
+    const T* end() const {
+        if (size == 0)
+            return data;
+        return data + size;
+    }
+
     void push_back(T value) {
         checkValue(value);
         T* newData = new T[size + 1];
